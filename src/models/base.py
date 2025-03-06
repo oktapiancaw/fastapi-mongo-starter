@@ -10,5 +10,7 @@ class ApplicationStage(str, Enum):
 
 
 class ApplicationMeta(BaseModel):
+    port: int = Field(8001)
+    host: str = Field("0.0.0.0")
     stage: ApplicationStage = Field(ApplicationStage.DEV)
     workers: Optional[int] = Field(1)

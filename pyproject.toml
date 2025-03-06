@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "The Fastapi Starter Template is a basic API service designed to manage posts. It allows users to create, read, update, and delete posts efficiently."
 authors = ["Oktapian <oktapian1998@gmail.com>"]
 readme = "README.md"
-package-mode = false
+packages = [{ include = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10.12"
@@ -23,6 +23,7 @@ scalar-fastapi = "^1.0.3"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 httpx = "^0.27.2"
+faker = "^36.2.2"
 
 [build-system]
 requires = ["poetry-core"]

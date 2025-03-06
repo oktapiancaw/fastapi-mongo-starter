@@ -1,15 +1,17 @@
 from contextlib import asynccontextmanager
 
+import uvicorn
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 
-from src.configs import poetry_config, logger
-from src.routes import router, ProcessTimeMiddleware
+from src.configs import config, poetry_config, LOGGER, LOGCONFIG
+from src.routes import router, ProcessTimeAndLogMiddleware
 
 
 def get_application() -> FastAPI:
-    logger.info("Starting application")
+    LOGGER.info("Starting application")
     application = FastAPI(
         docs_url="/",
         title=poetry_config.title,
@@ -27,7 +29,7 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    application.add_middleware(ProcessTimeMiddleware)
+    application.add_middleware(ProcessTimeAndLogMiddleware)
     application.include_router(router)
 
     application.get("/scalar", include_in_schema=False)(
@@ -38,3 +40,23 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
+
+if __name__ == "__main__":
+    """Launched with `poetry run start` at root level"""
+
+    if config.app.stage == "dev":
+        uvicorn.run(
+            "src.main:app",
+            host=config.app.host,
+            port=config.app.port,
+            reload=True,
+            log_config=LOGCONFIG,
+        )
+    else:
+        uvicorn.run(
+            "src.main:app",
+            host=config.app.host,
+            port=config.app.port,
+            workers=config.app.workers,
+            log_config=LOGCONFIG,
+        )

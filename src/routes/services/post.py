@@ -1,4 +1,4 @@
-from src.configs import logger
+from src.configs import LOGGER
 from src.models.post import Posts, Post, PostSchema
 from src.connections.pmongo import MainMongo
 
@@ -27,7 +27,7 @@ class PostService:
                 return Post.model_validate(raw)
             return None
         except Exception:
-            logger.exception("Failed get post")
+            LOGGER.exception("Failed get post")
             raise
         finally:
             self.mongo.close()
@@ -54,7 +54,7 @@ class PostService:
             return count, None
 
         except Exception:
-            logger.exception("Failed get posts")
+            LOGGER.exception("Failed get posts")
             raise
         finally:
             self.mongo.close()
@@ -78,7 +78,7 @@ class PostService:
             )
             return payload
         except Exception:
-            logger.exception("Failed add post")
+            LOGGER.exception("Failed add post")
             raise
         finally:
             self.mongo.close()
@@ -103,7 +103,7 @@ class PostService:
 
             return res.modified_count
         except Exception:
-            logger.exception("Failed update post")
+            LOGGER.exception("Failed update post")
             raise
         finally:
             self.mongo.close()
@@ -121,7 +121,7 @@ class PostService:
             res = self.mongo._db[self.collection_name].delete_one({"_id": id})
             return res.deleted_count
         except Exception:
-            logger.exception("Failed delete post")
+            LOGGER.exception("Failed delete post")
             raise
         finally:
             self.mongo.close()
