@@ -41,22 +41,21 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
-if __name__ == "__main__":
-    """Launched with `poetry run start` at root level"""
 
+def runner():
     if config.app.stage == "dev":
         uvicorn.run(
             "src.main:app",
-            host=config.app.host,
-            port=config.app.port,
+            host="0.0.0.0",
+            port=8000,
             reload=True,
             log_config=LOGCONFIG,
         )
     else:
         uvicorn.run(
             "src.main:app",
-            host=config.app.host,
-            port=config.app.port,
+            host="0.0.0.0",
+            port=8000,
             workers=config.app.workers,
             log_config=LOGCONFIG,
         )
