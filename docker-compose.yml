@@ -1,0 +1,16 @@
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-mongo-starter
+    command: poetry run fastapi-run
+    ports:
+      - 5020:8000
+    labels:
+      - dev.dozzle.group=starter
+      - dev.dozzle.name=fastapi-mongo-starter
+    env_file:
+      - .env
+
+    
