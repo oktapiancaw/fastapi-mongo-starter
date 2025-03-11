@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Request, HTTPException, Path, status
 from fastapi.responses import JSONResponse
 
+
 from src.models.post import PostSchema, Post, Posts
 from src.models.response import ServiceResponse
 from src.routes.services.post import PostService
+from src.utils.limiter import limiter
 
 app = APIRouter()
 service = PostService()
@@ -14,7 +16,7 @@ service = PostService()
     name="Get all posts",
     responses={**ServiceResponse(Posts).multi("get_posts", obj="Post")},
 )
-def get_posts():
+def get_posts(request: Request):
     try:
 
         # ? Get total of post, and the posts data
@@ -45,7 +47,7 @@ def get_posts():
 
 
 @app.get("/{id}", responses={**ServiceResponse(Post).get("get_post", obj="Post")})
-def get_post(id: str = Path(..., description="Post id")):
+def get_post(request: Request, id: str = Path(..., description="Post id")):
     try:
         # ? Check if post is not empty
         if post := service.get_post(id):
@@ -74,7 +76,8 @@ def get_post(id: str = Path(..., description="Post id")):
     status_code=201,
     responses={**ServiceResponse(Post).creation("add_post", obj="Post")},
 )
-def add_post(data: PostSchema):
+@limiter.limit("3/minute")  # ! Limit to 3 request per minute
+def add_post(request: Request, data: PostSchema):
     try:
         post = service.add_post(data)
 
@@ -94,7 +97,10 @@ def add_post(data: PostSchema):
 
 
 @app.put("/{id}", responses={**ServiceResponse(Post).update("update_post", obj="Post")})
-def update_post(data: PostSchema, id: str = Path(..., description="Post id")):
+@limiter.limit("3/minute")  # ! Limit to 3 request per minute
+def update_post(
+    request: Request, data: PostSchema, id: str = Path(..., description="Post id")
+):
     try:
         # ? Check if post is updated successfully
         if service.update_post(id, data):
@@ -118,7 +124,8 @@ def update_post(data: PostSchema, id: str = Path(..., description="Post id")):
 @app.delete(
     "/{id}", responses={**ServiceResponse(Post).delete("delete_post", obj="Post")}
 )
-def delete_post(id: str = Path(..., description="Post id")):
+@limiter.limit("10/minute")  #! Limit to 10 request per minute
+def delete_post(request: Request, id: str = Path(..., description="Post id")):
     try:
         # ? Check if post is deleted successfully
         if service.delete_post(id):

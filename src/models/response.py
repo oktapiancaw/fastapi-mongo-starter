@@ -27,6 +27,10 @@ class ServiceResponse:
             #     ),
             #     "description": "Occurs when the request you make does not match or is invalid",
             # },
+            429: {
+                "model": create_model(route, message=(str, "Rate limit exceeded")),
+                "description": "Occurs when the request exceeds the specified limit",
+            },
             500: {
                 "model": create_model(
                     route,

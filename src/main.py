@@ -8,6 +8,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from src.configs import config, poetry_config, LOGGER, LOGCONFIG
 from src.routes import router, ProcessTimeAndLogMiddleware
+from src.utils.limiter import limiter, RateLimitExceeded, limit_handler
 
 
 def get_application() -> FastAPI:
@@ -29,6 +30,8 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    application.state.limiter = limiter
+    application.add_exception_handler(RateLimitExceeded, limit_handler)  # type: ignore
     application.add_middleware(ProcessTimeAndLogMiddleware)
     application.include_router(router)
 
