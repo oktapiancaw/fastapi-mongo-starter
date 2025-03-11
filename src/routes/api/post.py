@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException, Path, status
 from fastapi.responses import JSONResponse
+from fastapi_cache.decorator import cache
 
 from src.models.post import PostSchema, Post, Posts
 from src.models.response import ServiceResponse
@@ -14,7 +15,8 @@ service = PostService()
     name="Get all posts",
     responses={**ServiceResponse(Posts).multi("get_posts", obj="Post")},
 )
-def get_posts():
+@cache(expire=30)  # ? Cache for 30 seconds
+async def get_posts():
     try:
 
         # ? Get total of post, and the posts data

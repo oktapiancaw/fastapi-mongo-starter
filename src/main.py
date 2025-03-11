@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -5,9 +6,20 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache.decorator import cache
+from redis import asyncio as aioredis
 
 from src.configs import config, poetry_config, LOGGER, LOGCONFIG
 from src.routes import router, ProcessTimeAndLogMiddleware
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    redis = aioredis.from_url(config.redis.uri_string())
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    yield
 
 
 def get_application() -> FastAPI:
@@ -20,6 +32,7 @@ def get_application() -> FastAPI:
         description=poetry_config.description,
         openapi_url="/openapi.json",
         contact={"authors": poetry_config.authors},
+        lifespan=lifespan,
     )
 
     application.add_middleware(
