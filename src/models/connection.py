@@ -58,3 +58,19 @@ class DBConnectionMeta(EndpointMeta, AuthMeta, URIConnectionMeta):
             if self.port:
                 self.port = int(self.port)
         return self
+
+
+class RedisConnectionMeta(EndpointMeta, AuthMeta):
+    database: int = Field(0, description="Database index")
+
+    def uri_string(self) -> str:
+        """
+        Return a URI string for the database connection.
+        :return: A string representing the URI.
+        """
+        if self.host:
+            meta = f"{self.host}:{self.port}"
+            if self.password:
+                return f"redis://{self.username}:{self.password}@{meta}/{self.database}"
+            return f"redis://{meta}/{self.database}"
+        return ""

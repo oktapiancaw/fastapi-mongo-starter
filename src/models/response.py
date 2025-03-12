@@ -27,10 +27,18 @@ class ServiceResponse:
             #     ),
             #     "description": "Occurs when the request you make does not match or is invalid",
             # },
+            409: {
+                "model": create_model(
+                    route,
+                    code=(int, 409),
+                    detail=(str, "Many Requests. Retry after n seconds"),
+                ),
+                "description": "Occurs when the request exceeds the specified limit",
+            },
             500: {
                 "model": create_model(
                     route,
-                    message=(str, "Internal Server Error"),
+                    detail=(str, "Internal Server Error"),
                 ),
                 "description": "Occurs when there is an engine or lib error in the engine",
             },

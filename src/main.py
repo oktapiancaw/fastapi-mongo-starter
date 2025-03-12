@@ -1,13 +1,29 @@
 from contextlib import asynccontextmanager
 
 import uvicorn
+import redis.asyncio as redis
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
+from fastapi_limiter import FastAPILimiter
+
 
 from src.configs import config, poetry_config, LOGGER, LOGCONFIG
 from src.routes import router, ProcessTimeAndLogMiddleware
+from src.utils.limiter import limiter_callback, service_name_identifier
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    redis_connection = redis.from_url(config.redis.uri_string(), encoding="utf8")
+    await FastAPILimiter.init(
+        redis_connection,
+        http_callback=limiter_callback,
+        identifier=service_name_identifier,
+    )
+    yield
+    await FastAPILimiter.close()
 
 
 def get_application() -> FastAPI:
@@ -20,6 +36,7 @@ def get_application() -> FastAPI:
         description=poetry_config.description,
         openapi_url="/openapi.json",
         contact={"authors": poetry_config.authors},
+        lifespan=lifespan,
     )
 
     application.add_middleware(

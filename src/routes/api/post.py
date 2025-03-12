@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Request, HTTPException, Path, status
+from fastapi import APIRouter, Request, HTTPException, Depends, Path, status
 from fastapi.responses import JSONResponse
+from fastapi_limiter.depends import RateLimiter
 
 from src.models.post import PostSchema, Post, Posts
 from src.models.response import ServiceResponse
@@ -73,7 +74,8 @@ def get_post(id: str = Path(..., description="Post id")):
     "",
     status_code=201,
     responses={**ServiceResponse(Post).creation("add_post", obj="Post")},
-)
+    dependencies=[Depends(RateLimiter(times=5, minutes=5))],
+)  # ! limit request only 5 times per 5 minutes
 def add_post(data: PostSchema):
     try:
         post = service.add_post(data)
@@ -93,7 +95,11 @@ def add_post(data: PostSchema):
         )
 
 
-@app.put("/{id}", responses={**ServiceResponse(Post).update("update_post", obj="Post")})
+@app.put(
+    "/{id}",
+    responses={**ServiceResponse(Post).update("update_post", obj="Post")},
+    dependencies=[Depends(RateLimiter(times=5, minutes=5))],
+)  # ! limit request only 5 times per 5 minutes
 def update_post(data: PostSchema, id: str = Path(..., description="Post id")):
     try:
         # ? Check if post is updated successfully

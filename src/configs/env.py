@@ -8,7 +8,7 @@ from pydantic_settings import (
 )
 
 from src.models.base import ApplicationMeta
-from src.models.connection import DBConnectionMeta
+from src.models.connection import DBConnectionMeta, RedisConnectionMeta
 
 
 class ApplicationConfig(BaseSettings):
@@ -20,6 +20,7 @@ class ApplicationConfig(BaseSettings):
     )
     app: ApplicationMeta
     mongo: DBConnectionMeta
+    redis: RedisConnectionMeta
 
 
 class ProjectConfig(BaseSettings):
