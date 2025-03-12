@@ -27,10 +27,16 @@ class ServiceResponse:
             #     ),
             #     "description": "Occurs when the request you make does not match or is invalid",
             # },
+            403: {
+                "model": create_model(
+                    route, detail=(str, "Invalid token or expired token")
+                ),
+                "description": "Occurs when when jwt token is invalid",
+            },
             500: {
                 "model": create_model(
                     route,
-                    message=(str, "Internal Server Error"),
+                    detail=(str, "Internal Server Error"),
                 ),
                 "description": "Occurs when there is an engine or lib error in the engine",
             },
@@ -81,7 +87,9 @@ class ServiceResponse:
 
         if auth or self.auth:
             response[401] = {
-                "model": create_model(route, message=(str, "Unauthorized"))
+                "model": create_model(
+                    route, message=(str, "Invalid authorization code.")
+                )
             }
 
         return response
@@ -132,7 +140,9 @@ class ServiceResponse:
 
         if auth or self.auth:
             response[401] = {
-                "model": create_model(route, message=(str, "Unauthorized"))
+                "model": create_model(
+                    route, message=(str, "Invalid authorization code.")
+                )
             }
 
         return response
@@ -178,7 +188,9 @@ class ServiceResponse:
 
         if auth or self.auth:
             response[401] = {
-                "model": create_model(route, message=(str, "Unauthorized"))
+                "model": create_model(
+                    route, message=(str, "Invalid authorization code.")
+                )
             }
 
         return response
@@ -234,7 +246,9 @@ class ServiceResponse:
 
         if auth or self.auth:
             response[401] = {
-                "model": create_model(route, message=(str, "Unauthorized"))
+                "model": create_model(
+                    route, message=(str, "Invalid authorization code.")
+                )
             }
 
         return response
@@ -292,7 +306,9 @@ class ServiceResponse:
 
         if auth or self.auth:
             response[401] = {
-                "model": create_model(route, message=(str, "Unauthorized"))
+                "model": create_model(
+                    route, message=(str, "Invalid authorization code.")
+                )
             }
 
         return response

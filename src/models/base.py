@@ -12,3 +12,4 @@ class ApplicationStage(str, Enum):
 class ApplicationMeta(BaseModel):
     stage: ApplicationStage = Field(ApplicationStage.DEV)
     workers: Optional[int] = Field(1)
+    auth_secret: str

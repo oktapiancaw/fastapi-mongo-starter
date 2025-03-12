@@ -12,7 +12,7 @@ service = PostService()
 @app.get(
     "",
     name="Get all posts",
-    responses={**ServiceResponse(Posts).multi("get_posts", obj="Post")},
+    responses={**ServiceResponse(Posts).multi("get_posts", obj="Post", auth=True)},
 )
 def get_posts():
     try:
@@ -44,7 +44,9 @@ def get_posts():
         )
 
 
-@app.get("/{id}", responses={**ServiceResponse(Post).get("get_post", obj="Post")})
+@app.get(
+    "/{id}", responses={**ServiceResponse(Post).get("get_post", obj="Post", auth=True)}
+)
 def get_post(id: str = Path(..., description="Post id")):
     try:
         # ? Check if post is not empty
@@ -72,7 +74,7 @@ def get_post(id: str = Path(..., description="Post id")):
 @app.post(
     "",
     status_code=201,
-    responses={**ServiceResponse(Post).creation("add_post", obj="Post")},
+    responses={**ServiceResponse(Post).creation("add_post", obj="Post", auth=True)},
 )
 def add_post(data: PostSchema):
     try:
@@ -93,7 +95,10 @@ def add_post(data: PostSchema):
         )
 
 
-@app.put("/{id}", responses={**ServiceResponse(Post).update("update_post", obj="Post")})
+@app.put(
+    "/{id}",
+    responses={**ServiceResponse(Post).update("update_post", obj="Post", auth=True)},
+)
 def update_post(data: PostSchema, id: str = Path(..., description="Post id")):
     try:
         # ? Check if post is updated successfully
@@ -116,7 +121,8 @@ def update_post(data: PostSchema, id: str = Path(..., description="Post id")):
 
 
 @app.delete(
-    "/{id}", responses={**ServiceResponse(Post).delete("delete_post", obj="Post")}
+    "/{id}",
+    responses={**ServiceResponse(Post).delete("delete_post", obj="Post", auth=True)},
 )
 def delete_post(id: str = Path(..., description="Post id")):
     try:
