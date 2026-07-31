@@ -1,10 +1,10 @@
-from typing import Tuple, Type, Optional
+from typing import Tuple, Type
 
 from pydantic_settings import (
     BaseSettings,
-    SettingsConfigDict,
-    PyprojectTomlConfigSettingsSource,
     PydanticBaseSettingsSource,
+    PyprojectTomlConfigSettingsSource,
+    SettingsConfigDict,
 )
 
 from src.models.base import ApplicationMeta
@@ -23,7 +23,6 @@ class ApplicationConfig(BaseSettings):
 
 
 class ProjectConfig(BaseSettings):
-
     name: str
     version: str = "0.1.0"
     description: str = ""
@@ -41,7 +40,7 @@ class ProjectConfig(BaseSettings):
         return (PyprojectTomlConfigSettingsSource(settings_cls),)
 
     model_config = SettingsConfigDict(
-        pyproject_toml_table_header=("tool", "poetry"), extra="ignore"
+        pyproject_toml_table_header=("project",), extra="ignore"
     )
 
     @property
