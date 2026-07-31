@@ -1,13 +1,10 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
-
 from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
+from starlette.middleware.cors import CORSMiddleware
 
-from src.configs import config, poetry_config, LOGGER, LOGCONFIG
-from src.routes import router, ProcessTimeAndLogMiddleware
+from src.configs import LOGCONFIG, LOGGER, config, poetry_config
+from src.routes import ProcessTimeAndLogMiddleware, router
 
 
 def get_application() -> FastAPI:
@@ -33,7 +30,9 @@ def get_application() -> FastAPI:
     application.include_router(router)
 
     application.get("/scalar", include_in_schema=False)(
-        lambda: get_scalar_api_reference(openapi_url=app.openapi_url, title=app.title, hide_models=True)  # type: ignore
+        lambda: get_scalar_api_reference(
+            openapi_url=app.openapi_url, title=app.title, hide_models=True
+        )  # type: ignore
     )
 
     return application

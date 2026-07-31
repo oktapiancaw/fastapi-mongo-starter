@@ -1,9 +1,7 @@
-import os
 import logging
 import logging.config
-
+import os
 from enum import Enum
-from logging.handlers import RotatingFileHandler
 
 
 class CustomLogLevel(int, Enum):

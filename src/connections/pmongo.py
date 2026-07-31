@@ -1,13 +1,12 @@
 from pymongo import MongoClient
 from pymongo.database import Database
-from pymongo.errors import NetworkTimeout, ExecutionTimeout
+from pymongo.errors import ExecutionTimeout, NetworkTimeout
 
 from src.configs import config
 from src.models.connection import DBConnectionMeta
 
 
 class MongoConnector:
-
     _meta: DBConnectionMeta
     _client: MongoClient
     _db: Database
@@ -21,7 +20,9 @@ class MongoConnector:
         """
         self._meta = meta
         if not self._meta.uri:
-            self._meta.uri = self._meta.uri_string(base="mongodb", with_db=False)
+            self._meta.uri = self._meta.uri_string(
+                base="mongodb", with_db=False
+            )
 
     def __enter__(self):
         """
@@ -54,7 +55,9 @@ class MongoConnector:
         """
 
         try:
-            self._client = MongoClient(self._meta.uri, timeoutMS=20000, **kwargs)
+            self._client = MongoClient(
+                self._meta.uri, timeoutMS=20000, **kwargs
+            )
             self._db = self._client[str(self._meta.database)]
         except (NetworkTimeout, ExecutionTimeout):
             raise ValueError("Mongo connection timed out.")
